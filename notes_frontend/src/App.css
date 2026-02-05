@@ -1,104 +1,440 @@
-/* CSS Variables for Theme Management */
+/* Retro Notes Theme (plain CSS only) */
 :root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #282c34;
-  --text-secondary: #61dafb;
-  --border-color: #e9ecef;
-  --button-bg: #007bff;
-  --button-text: #ffffff;
+  --retro-bg: #fbf7e9;
+  --retro-surface: #fffdf6;
+  --retro-ink: #1a1a1a;
+  --retro-muted: rgba(26, 26, 26, 0.65);
+
+  --retro-primary: #3b82f6;
+  --retro-success: #06b6d4;
+  --retro-danger: #ef4444;
+
+  --retro-border: rgba(26, 26, 26, 0.18);
+  --retro-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+  --retro-pixel: 2px;
+  --retro-radius: 14px;
+
+  --font-body: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-[data-theme="dark"] {
-  /* Dark theme colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #282c34;
-  --text-primary: #ffffff;
-  --text-secondary: #61dafb;
-  --border-color: #404040;
-  --button-bg: #0056b3;
-  --button-text: #ffffff;
+[data-theme="retro-dark"] {
+  --retro-bg: #0e1116;
+  --retro-surface: #141a22;
+  --retro-ink: #f4f7ff;
+  --retro-muted: rgba(244, 247, 255, 0.65);
+  --retro-border: rgba(244, 247, 255, 0.18);
+  --retro-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 .App {
-  text-align: center;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: radial-gradient(circle at 20% 0%, rgba(59, 130, 246, 0.18), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.18), transparent 45%),
+    var(--retro-bg);
+  color: var(--retro-ink);
+  font-family: var(--font-body);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: var(--bg-secondary);
+.appFrame {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.topbar {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease;
-  position: relative;
+  justify-content: space-between;
+  padding: 18px 18px;
+  border-bottom: 1px solid var(--retro-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(8px);
 }
 
-.App-link {
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
+[data-theme="retro-dark"] .topbar {
+  background: linear-gradient(180deg, rgba(20, 26, 34, 0.72), rgba(20, 26, 34, 0.35));
 }
 
-.theme-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brandMark {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--retro-ink);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(6, 182, 212, 0.18));
+  border: 1px solid var(--retro-border);
+  box-shadow: var(--retro-shadow);
+}
+
+.brandTitle {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.brandTagline {
+  font-size: 12px;
+  color: var(--retro-muted);
+}
+
+.topbarActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.topbarBtn {
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--retro-border);
+  background: var(--retro-surface);
+  color: var(--retro-ink);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-.theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  opacity: 0.9;
+.topbarBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
-.theme-toggle:active {
-  transform: translateY(0);
+.content {
+  flex: 1;
+  padding: 14px 14px 28px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.statusRow {
+  margin-bottom: 12px;
 }
 
-/* Responsive design for mobile */
-@media (max-width: 768px) {
-  .theme-toggle {
-    top: 10px;
-    right: 10px;
-    padding: 8px 16px;
-    font-size: 12px;
+.split {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.panel {
+  border: 1px solid var(--retro-border);
+  background: var(--retro-surface);
+  border-radius: var(--retro-radius);
+  box-shadow: var(--retro-shadow);
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.sidebar {
+  min-height: 520px;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--retro-border);
+}
+
+.sidebarTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--retro-border);
+  color: var(--retro-muted);
+}
+
+.notesList {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notesEmpty {
+  padding: 14px;
+  color: var(--retro-muted);
+  font-weight: 600;
+}
+
+.noteRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border: 1px solid var(--retro-border);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.10), transparent);
+}
+
+.noteRow.selected {
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+}
+
+.noteRowMain {
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 12px 12px;
+  cursor: pointer;
+  color: var(--retro-ink);
+}
+
+.noteRowTitle {
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.noteRowPreview {
+  font-size: 12px;
+  color: var(--retro-muted);
+}
+
+.noteRowActions {
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 0;
+}
+
+.main {
+  min-height: 520px;
+}
+
+.mainHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px;
+  border-bottom: 1px solid var(--retro-border);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--retro-muted);
+  font-weight: 700;
+}
+
+.form {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--retro-muted);
+}
+
+.input,
+.textarea {
+  border: 1px solid var(--retro-border);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--retro-ink);
+  border-radius: 14px;
+  padding: 12px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+[data-theme="retro-dark"] .input,
+[data-theme="retro-dark"] .textarea {
+  background: rgba(20, 26, 34, 0.75);
+}
+
+.input:focus,
+.textarea:focus {
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.16);
+  border-color: rgba(6, 182, 212, 0.6);
+}
+
+.fieldError {
+  margin-top: -6px;
+  font-size: 12px;
+  color: var(--retro-danger);
+  font-weight: 700;
+}
+
+.formActions {
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons */
+.btn {
+  cursor: pointer;
+  border: 1px solid var(--retro-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 13px;
+  background: var(--retro-surface);
+  color: var(--retro-ink);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.10);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  border-color: rgba(59, 130, 246, 0.55);
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0.05));
+}
+
+.btn-accent {
+  border-color: rgba(6, 182, 212, 0.55);
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.20), rgba(6, 182, 212, 0.06));
+}
+
+.btn-danger {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.16), rgba(239, 68, 68, 0.06));
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.btn-md {
+  padding: 10px 14px;
+}
+
+.btn-sm {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.btn-xs {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+
+/* Banner */
+.banner {
+  border: 1px solid var(--retro-border);
+  border-radius: 16px;
+  background: var(--retro-surface);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.10);
+  padding: 12px 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.bannerTitle {
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.bannerMessage {
+  font-size: 13px;
+  color: var(--retro-muted);
+  font-weight: 700;
+}
+
+.bannerAction {
+  cursor: pointer;
+  border: 1px solid var(--retro-border);
+  background: transparent;
+  color: var(--retro-ink);
+  border-radius: 14px;
+  padding: 8px 10px;
+  font-weight: 900;
+}
+
+.banner-success {
+  border-color: rgba(6, 182, 212, 0.45);
+}
+
+.banner-error {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.banner-info {
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+/* Hero empty state */
+.hero {
+  padding: 44px 22px;
+  text-align: left;
+}
+
+.heroTitle {
+  font-size: 34px;
+  font-weight: 1000;
+  letter-spacing: 0.01em;
+}
+
+.heroSubtitle {
+  margin-top: 8px;
+  color: var(--retro-muted);
+  font-weight: 700;
+  max-width: 60ch;
+}
+
+/* Footer */
+.footer {
+  margin-top: 14px;
+  padding: 10px 6px 0;
+  color: var(--retro-muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.codeChip {
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--retro-border);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+[data-theme="retro-dark"] .codeChip {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .split {
+    grid-template-columns: 1fr;
   }
 }
