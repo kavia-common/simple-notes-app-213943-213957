@@ -1,20 +1,142 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
 
-# testing
-/coverage
-
 # production
-/build
+build/
 
 # misc
 .DS_Store
-.env
 
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# coverage
+coverage/
+`````
+
+Explanation: Add a utility script that creates a GitHub repo (via GitHub API) and pushes the current workspace. Requires GITHUB_TOKEN and optional GITHUB_OWNER/REPO_NAME.
+````write file="utils/create_github_repo_and_push.sh"
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Creates a new GitHub repository and pushes the current workspace to it.
+#
+# Requirements:
+#   - git installed
+#   - curl installed
+#   - A GitHub token with "repo" scope in env var: GITHUB_TOKEN
+#
+# Optional:
+#   - GITHUB_OWNER: GitHub username/org (if omitted, script fetches the authenticated user login)
+#   - REPO_NAME: repository name (default: notes_frontend)
+#   - REPO_PRIVATE: true|false (default: false)
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+: "${GITHUB_TOKEN:?GITHUB_TOKEN is required (a GitHub token with repo scope)}"
+REPO_NAME="${REPO_NAME:-notes_frontend}"
+REPO_PRIVATE="${REPO_PRIVATE:-false}"
+
+api() {
+  curl -sS \
+    -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    -H "Accept: application/vnd.github+json" \
+    "$@"
+}
+
+if [[ -z "${GITHUB_OWNER:-}" ]]; then
+  GITHUB_OWNER="$(api https://api.github.com/user | python3 -c 'import sys, json; print(json.load(sys.stdin)["login"])')"
+fi
+
+echo "Creating repo '${GITHUB_OWNER}/${REPO_NAME}' (private=${REPO_PRIVATE})..."
+
+create_payload="$(python3 - <<PY
+import json, os
+print(json.dumps({
+  "name": os.environ.get("REPO_NAME", "notes_frontend"),
+  "private": (os.environ.get("REPO_PRIVATE","false").lower() == "true"),
+  "auto_init": False,
+  "has_issues": True,
+  "has_projects": False,
+  "has_wiki": False
+}))
+PY
+)"
+
+# Try create under user; if that fails (e.g., org), user can set GITHUB_OWNER and adapt endpoint.
+create_resp="$(api -X POST https://api.github.com/user/repos -d "${create_payload}" || true)"
+
+if echo "${create_resp}" | python3 -c 'import sys, json; j=json.load(sys.stdin); print("message" in j and j["message"] or "")' | grep -qi "name already exists"; then
+  echo "Repo already exists. Proceeding to push."
+elif echo "${create_resp}" | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j.get("html_url",""))' | grep -q "github.com"; then
+  echo "Repo created:"
+  echo "${create_resp}" | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["html_url"])'
+else
+  # If creation failed, print response and exit.
+  echo "Failed to create repo. Response:"
+  echo "${create_resp}"
+  exit 1
+fi
+
+cd "${ROOT_DIR}"
+
+# Ensure git repo exists
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git init
+  git branch -m main || true
+  git add -A
+  git commit -m "Initial commit"
+fi
+
+# Ensure branch is main
+git branch -M main
+
+REMOTE_URL="https://github.com/${GITHUB_OWNER}/${REPO_NAME}.git"
+
+if git remote | grep -q "^origin$"; then
+  git remote set-url origin "${REMOTE_URL}"
+else
+  git remote add origin "${REMOTE_URL}"
+fi
+
+echo "Pushing to ${REMOTE_URL} ..."
+git push -u origin main
+
+echo "Done."
+echo "Remote: ${REMOTE_URL}"
+`````
+
+Explanation: Ensure the helper script is documented and visible.
+````write file="utils/README.md"
+# Utilities
+
+## create_github_repo_and_push.sh
+
+Creates a new GitHub repository under the authenticated user and pushes the current workspace.
+
+### Usage
+
+From the repository root:
+
+```bash
+export GITHUB_TOKEN="YOUR_TOKEN_WITH_REPO_SCOPE"
+# Optional:
+export REPO_NAME="notes_frontend"
+export REPO_PRIVATE="false"   # true|false
+# export GITHUB_OWNER="your-username"  # optional; auto-detected if omitted
+
+bash utils/create_github_repo_and_push.sh
+```
