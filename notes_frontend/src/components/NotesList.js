@@ -8,16 +8,30 @@ function getPreview(content) {
 }
 
 // PUBLIC_INTERFACE
-export function NotesList({ notes, selectedId, onSelect, onNew, onDelete, isDeletingId }) {
+export function NotesList({
+  notes,
+  selectedId,
+  onSelect,
+  onNew,
+  onDelete,
+  isDeletingId,
+}) {
   /** Sidebar list of notes with select/new/delete actions. */
   return (
     <aside className="panel sidebar" aria-label="Notes list">
       <div className="sidebarHeader">
         <div className="sidebarTitleWrap">
           <h2 className="panelTitle">Notes</h2>
-          <span className="badge" aria-label={`${notes.length} notes total`}>{notes.length}</span>
+          <span className="badge" aria-label={`${notes.length} notes total`}>
+            {notes.length}
+          </span>
         </div>
-        <Button variant="accent" size="sm" onClick={onNew} ariaLabel="Create a new note">
+        <Button
+          variant="accent"
+          size="sm"
+          onClick={onNew}
+          ariaLabel="Create a new note"
+        >
           + New
         </Button>
       </div>
@@ -29,8 +43,16 @@ export function NotesList({ notes, selectedId, onSelect, onNew, onDelete, isDele
           notes.map((n) => {
             const isSelected = String(n.id) === String(selectedId);
             return (
-              <li key={n.id} className={`noteRow ${isSelected ? "selected" : ""}`}>
-                <button className="noteRowMain" type="button" onClick={() => onSelect(n.id)} aria-label={`Open note ${n.title || "Untitled"}`}>
+              <li
+                key={n.id}
+                className={`noteRow ${isSelected ? "selected" : ""}`}
+              >
+                <button
+                  className="noteRowMain"
+                  type="button"
+                  onClick={() => onSelect(n.id)}
+                  aria-label={`Open note ${n.title || "Untitled"}`}
+                >
                   <div className="noteRowTitle">{n.title || "Untitled"}</div>
                   <div className="noteRowPreview">{getPreview(n.content)}</div>
                 </button>
@@ -42,7 +64,9 @@ export function NotesList({ notes, selectedId, onSelect, onNew, onDelete, isDele
                     onClick={() => onDelete(n.id)}
                     ariaLabel={`Delete note ${n.title || "Untitled"}`}
                   >
-                    {isDeletingId && String(isDeletingId) === String(n.id) ? "…" : "Del"}
+                    {isDeletingId && String(isDeletingId) === String(n.id)
+                      ? "…"
+                      : "Del"}
                   </Button>
                 </div>
               </li>

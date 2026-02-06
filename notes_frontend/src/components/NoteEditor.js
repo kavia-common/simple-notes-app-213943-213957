@@ -27,10 +27,13 @@ export function NoteEditor({ mode, note, onSave, onCancel, isSaving }) {
     setTouched(false);
   }, [initial.id, initial.title, initial.content, mode]);
 
-  const titleError = touched && title.trim().length === 0 ? "Title is required." : "";
-  const contentError = touched && content.trim().length === 0 ? "Content is required." : "";
+  const titleError =
+    touched && title.trim().length === 0 ? "Title is required." : "";
+  const contentError =
+    touched && content.trim().length === 0 ? "Content is required." : "";
 
-  const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !isSaving;
+  const canSubmit =
+    title.trim().length > 0 && content.trim().length > 0 && !isSaving;
 
   const primaryLabel = mode === "create" ? "Save" : "Update";
 
@@ -40,7 +43,8 @@ export function NoteEditor({ mode, note, onSave, onCancel, isSaving }) {
         <div className="hero">
           <div className="heroTitle">Retro Notes</div>
           <div className="heroSubtitle">
-            Pick a note on the left, or create a new one. Your thoughts, pixel-perfect.
+            Pick a note on the left, or create a new one. Your thoughts,
+            pixel-perfect.
           </div>
         </div>
       </section>
@@ -53,7 +57,11 @@ export function NoteEditor({ mode, note, onSave, onCancel, isSaving }) {
     <section className="panel main" aria-label="Note editor">
       <div className="mainHeader">
         <h2 className="panelTitle">
-          {mode === "create" ? "New Note" : mode === "edit" ? "Edit Note" : "View Note"}
+          {mode === "create"
+            ? "New Note"
+            : mode === "edit"
+              ? "Edit Note"
+              : "View Note"}
         </h2>
 
         <div className="mainActions">
@@ -105,7 +113,13 @@ export function NoteEditor({ mode, note, onSave, onCancel, isSaving }) {
         <div className="formActions">
           {mode === "view" ? (
             <>
-              <Button variant="primary" onClick={() => onSave({ ...initial, title, content, _intent: "edit" })} ariaLabel="Edit this note">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  onSave({ ...initial, title, content, _intent: "edit" })
+                }
+                ariaLabel="Edit this note"
+              >
                 Edit
               </Button>
               <Button variant="ghost" onClick={onCancel} ariaLabel="Close note">
@@ -121,13 +135,22 @@ export function NoteEditor({ mode, note, onSave, onCancel, isSaving }) {
                 onClick={() => {
                   setTouched(true);
                   if (!canSubmit) return;
-                  onSave({ ...initial, title: title.trim(), content: content.trim() });
+                  onSave({
+                    ...initial,
+                    title: title.trim(),
+                    content: content.trim(),
+                  });
                 }}
                 ariaLabel={primaryLabel}
               >
                 {isSaving ? "Saving…" : primaryLabel}
               </Button>
-              <Button variant="ghost" onClick={onCancel} disabled={isSaving} ariaLabel="Cancel editing">
+              <Button
+                variant="ghost"
+                onClick={onCancel}
+                disabled={isSaving}
+                ariaLabel="Cancel editing"
+              >
                 Cancel
               </Button>
             </>

@@ -9,8 +9,11 @@ const DEFAULT_TIMEOUT_MS = 15000;
  * Important: values are controlled by the container .env; do not hardcode.
  */
 function getApiBase() {
-  const base =
-    (process.env.REACT_APP_API_BASE || process.env.REACT_APP_BACKEND_URL || "").trim();
+  const base = (
+    process.env.REACT_APP_API_BASE ||
+    process.env.REACT_APP_BACKEND_URL ||
+    ""
+  ).trim();
 
   // If not set, default to same-origin. This supports proxying setups.
   return base;
@@ -38,11 +41,15 @@ async function fetchJson(path, options = {}) {
     const contentType = res.headers.get("content-type") || "";
     const isJson = contentType.includes("application/json");
 
-    const payload = isJson ? await res.json().catch(() => null) : await res.text().catch(() => "");
+    const payload = isJson
+      ? await res.json().catch(() => null)
+      : await res.text().catch(() => "");
 
     if (!res.ok) {
       const message =
-        (payload && typeof payload === "object" && (payload.detail || payload.message)) ||
+        (payload &&
+          typeof payload === "object" &&
+          (payload.detail || payload.message)) ||
         (typeof payload === "string" && payload) ||
         `Request failed with status ${res.status}`;
       const err = new Error(message);
@@ -69,7 +76,6 @@ async function tryPrefixes(makeRequest) {
   let lastErr = null;
   for (const prefix of CANDIDATE_PREFIXES) {
     try {
-      // eslint-disable-next-line no-await-in-loop
       return await makeRequest(prefix);
     } catch (e) {
       // If 404, try next prefix. Otherwise, bubble up immediately.
@@ -80,14 +86,19 @@ async function tryPrefixes(makeRequest) {
       throw e;
     }
   }
-  throw lastErr || new Error("Unable to reach notes endpoint (all candidate paths failed).");
+  throw (
+    lastErr ||
+    new Error("Unable to reach notes endpoint (all candidate paths failed).")
+  );
 }
 
 // PUBLIC_INTERFACE
 export async function listNotes() {
   /** Fetch all notes. Returns an array of notes. */
   const base = getApiBase();
-  return tryPrefixes((prefix) => fetchJson(joinUrl(base, prefix), { method: "GET" }));
+  return tryPrefixes((prefix) =>
+    fetchJson(joinUrl(base, prefix), { method: "GET" }),
+  );
 }
 
 // PUBLIC_INTERFACE
@@ -98,7 +109,7 @@ export async function createNote(note) {
     fetchJson(joinUrl(base, prefix), {
       method: "POST",
       body: JSON.stringify(note),
-    })
+    }),
   );
 }
 
@@ -110,7 +121,7 @@ export async function updateNote(id, note) {
     fetchJson(joinUrl(base, `${prefix}/${encodeURIComponent(String(id))}`), {
       method: "PUT",
       body: JSON.stringify(note),
-    })
+    }),
   );
 }
 
@@ -121,6 +132,6 @@ export async function deleteNote(id) {
   return tryPrefixes((prefix) =>
     fetchJson(joinUrl(base, `${prefix}/${encodeURIComponent(String(id))}`), {
       method: "DELETE",
-    })
+    }),
   );
 }

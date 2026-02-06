@@ -39,11 +39,15 @@ function App() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
-  const [status, setStatus] = useState({ kind: "info", title: "", message: "" });
+  const [status, setStatus] = useState({
+    kind: "info",
+    title: "",
+    message: "",
+  });
 
   const selectedNote = useMemo(
     () => notes.find((n) => String(n.id) === String(selectedId)) || null,
-    [notes, selectedId]
+    [notes, selectedId],
   );
 
   useEffect(() => {
@@ -52,21 +56,31 @@ function App() {
 
   async function refreshNotes({ keepSelection = true } = {}) {
     setLoading(true);
-    setStatus({ kind: "info", title: "Loading", message: "Fetching notes from the backend…" });
+    setStatus({
+      kind: "info",
+      title: "Loading",
+      message: "Fetching notes from the backend…",
+    });
     try {
       const data = await listNotes();
       const normalized = sortNotes(normalizeNotes(data));
       setNotes(normalized);
 
       if (keepSelection && selectedId != null) {
-        const stillExists = normalized.some((n) => String(n.id) === String(selectedId));
+        const stillExists = normalized.some(
+          (n) => String(n.id) === String(selectedId),
+        );
         if (!stillExists) {
           setSelectedId(null);
           setMode("empty");
         }
       }
 
-      setStatus({ kind: "success", title: "Ready", message: `Loaded ${normalized.length} note(s).` });
+      setStatus({
+        kind: "success",
+        title: "Ready",
+        message: `Loaded ${normalized.length} note(s).`,
+      });
     } catch (e) {
       setStatus({
         kind: "error",
@@ -88,7 +102,11 @@ function App() {
   function onNew() {
     setSelectedId(null);
     setMode("create");
-    setStatus({ kind: "info", title: "New note", message: "Drafting a new note…" });
+    setStatus({
+      kind: "info",
+      title: "New note",
+      message: "Drafting a new note…",
+    });
   }
 
   function onSelect(id) {
@@ -105,9 +123,17 @@ function App() {
       await refreshNotes({ keepSelection: false });
       setSelectedId(null);
       setMode("empty");
-      setStatus({ kind: "success", title: "Deleted", message: "Note deleted." });
+      setStatus({
+        kind: "success",
+        title: "Deleted",
+        message: "Note deleted.",
+      });
     } catch (e) {
-      setStatus({ kind: "error", title: "Delete failed", message: e?.message || "Could not delete note." });
+      setStatus({
+        kind: "error",
+        title: "Delete failed",
+        message: e?.message || "Could not delete note.",
+      });
     } finally {
       setDeletingId(null);
     }
@@ -117,16 +143,27 @@ function App() {
     // Special intent: in view mode, the "Edit" button routes to edit mode.
     if (mode === "view" && payload && payload._intent === "edit") {
       setMode("edit");
-      setStatus({ kind: "info", title: "Editing", message: "Make your changes, then Update." });
+      setStatus({
+        kind: "info",
+        title: "Editing",
+        message: "Make your changes, then Update.",
+      });
       return;
     }
 
     setSaving(true);
-    setStatus({ kind: "info", title: "Saving", message: "Writing note to the backend…" });
+    setStatus({
+      kind: "info",
+      title: "Saving",
+      message: "Writing note to the backend…",
+    });
 
     try {
       if (mode === "create") {
-        const created = await createNote({ title: payload.title, content: payload.content });
+        const created = await createNote({
+          title: payload.title,
+          content: payload.content,
+        });
         // If backend returns note with id, prefer it; otherwise refresh list.
         if (created && created.id != null) {
           await refreshNotes({ keepSelection: false });
@@ -136,9 +173,16 @@ function App() {
           await refreshNotes({ keepSelection: false });
           setMode("empty");
         }
-        setStatus({ kind: "success", title: "Saved", message: "New note created." });
+        setStatus({
+          kind: "success",
+          title: "Saved",
+          message: "New note created.",
+        });
       } else if (mode === "edit" && selectedNote) {
-        const updated = await updateNote(selectedNote.id, { title: payload.title, content: payload.content });
+        const updated = await updateNote(selectedNote.id, {
+          title: payload.title,
+          content: payload.content,
+        });
         if (updated && updated.id != null) {
           await refreshNotes({ keepSelection: true });
           setSelectedId(updated.id);
@@ -146,12 +190,24 @@ function App() {
           await refreshNotes({ keepSelection: true });
         }
         setMode("view");
-        setStatus({ kind: "success", title: "Updated", message: "Note updated." });
+        setStatus({
+          kind: "success",
+          title: "Updated",
+          message: "Note updated.",
+        });
       } else {
-        setStatus({ kind: "error", title: "Nothing to save", message: "No active note selected." });
+        setStatus({
+          kind: "error",
+          title: "Nothing to save",
+          message: "No active note selected.",
+        });
       }
     } catch (e) {
-      setStatus({ kind: "error", title: "Save failed", message: e?.message || "Could not save note." });
+      setStatus({
+        kind: "error",
+        title: "Save failed",
+        message: e?.message || "Could not save note.",
+      });
     } finally {
       setSaving(false);
     }
@@ -160,22 +216,33 @@ function App() {
   function onCancel() {
     if (selectedNote) {
       setMode("view");
-      setStatus({ kind: "info", title: "Cancelled", message: "Back to view mode." });
+      setStatus({
+        kind: "info",
+        title: "Cancelled",
+        message: "Back to view mode.",
+      });
     } else {
       setMode("empty");
-      setStatus({ kind: "info", title: "Cancelled", message: "Draft discarded." });
+      setStatus({
+        kind: "info",
+        title: "Cancelled",
+        message: "Draft discarded.",
+      });
     }
   }
 
   const editorMode = mode === "view" || mode === "edit" ? mode : mode; // keep explicit
-  const editorNote = mode === "create" ? { id: null, title: "", content: "" } : selectedNote;
+  const editorNote =
+    mode === "create" ? { id: null, title: "", content: "" } : selectedNote;
 
   return (
     <div className="App">
       <div className="appFrame">
         <header className="topbar">
           <div className="brand">
-            <div className="brandMark" aria-hidden="true">RN</div>
+            <div className="brandMark" aria-hidden="true">
+              RN
+            </div>
             <div className="brandText">
               <div className="brandTitle">Retro Notes</div>
               <div className="brandTagline">Create • Edit • Delete</div>
@@ -186,12 +253,20 @@ function App() {
             <button
               className="topbarBtn"
               type="button"
-              onClick={() => setTheme((t) => (t === "retro" ? "retro-dark" : "retro"))}
+              onClick={() =>
+                setTheme((t) => (t === "retro" ? "retro-dark" : "retro"))
+              }
               aria-label="Toggle retro theme"
             >
               Theme: {theme === "retro" ? "Light" : "Dark"}
             </button>
-            <button className="topbarBtn" type="button" onClick={() => refreshNotes()} disabled={loading} aria-label="Refresh notes">
+            <button
+              className="topbarBtn"
+              type="button"
+              onClick={() => refreshNotes()}
+              disabled={loading}
+              aria-label="Refresh notes"
+            >
               {loading ? "Refreshing…" : "Refresh"}
             </button>
           </div>
@@ -204,7 +279,9 @@ function App() {
               title={status.title}
               message={status.message}
               actionLabel={status.kind === "error" ? "Retry" : ""}
-              onAction={status.kind === "error" ? () => refreshNotes() : undefined}
+              onAction={
+                status.kind === "error" ? () => refreshNotes() : undefined
+              }
             />
           </div>
 
@@ -219,7 +296,13 @@ function App() {
             />
 
             <NoteEditor
-              mode={selectedNote ? editorMode : mode === "create" ? "create" : "empty"}
+              mode={
+                selectedNote
+                  ? editorMode
+                  : mode === "create"
+                    ? "create"
+                    : "empty"
+              }
               note={editorNote}
               onSave={onSave}
               onCancel={onCancel}
@@ -231,7 +314,11 @@ function App() {
             <div className="footerHint">
               API base:{" "}
               <code className="codeChip">
-                {(process.env.REACT_APP_API_BASE || process.env.REACT_APP_BACKEND_URL || "same-origin").trim() || "same-origin"}
+                {(
+                  process.env.REACT_APP_API_BASE ||
+                  process.env.REACT_APP_BACKEND_URL ||
+                  "same-origin"
+                ).trim() || "same-origin"}
               </code>
             </div>
           </footer>
